@@ -38,10 +38,12 @@ describe('filterGPS', () => {
     expect(result).toHaveLength(2);
   });
 
-  it('skips locations without matching quality', () => {
+  it('passes all locations through when no quality records exist', () => {
     const noQualities: GPSQualityRecord[] = [];
     const result = filterGPS(locations, noQualities);
-    expect(result).toHaveLength(0);
+    expect(result).toHaveLength(4);
+    expect(result[0].fixType).toBe(3);
+    expect(result[0].hdop).toBe(1.0);
   });
 });
 

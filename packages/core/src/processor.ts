@@ -18,6 +18,22 @@ export function filterGPS(
   qualities: GPSQualityRecord[],
   maxHdop: number = 5.0,
 ): GPSPoint[] {
+  if (qualities.length === 0) {
+    return locations.map((loc) => ({
+      timestampMs: loc.timestampMs,
+      latitude: loc.latitude,
+      longitude: loc.longitude,
+      speedKmh: loc.speedKmh,
+      courseDeg: loc.courseDeg,
+      accel: [0, 0, 0] as [number, number, number],
+      gyro: [0, 0, 0] as [number, number, number],
+      hdop: 1.0,
+      fixType: 3,
+      satellites: 0,
+      distanceFromStart: 0,
+    }));
+  }
+
   const qualityByTime = new Map<
     number,
     { hdop: number; fixType: number; satellites: number }
