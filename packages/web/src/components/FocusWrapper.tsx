@@ -13,7 +13,7 @@ export function FocusWrapper({ panelId, children, className }: FocusWrapperProps
   const setFocusedPanel = useSessionStore((s) => s.setFocusedPanel);
   const isExpanded = focusedPanel === panelId;
 
-  const handleClick = useCallback(() => {
+  const handleExpand = useCallback(() => {
     if (!isExpanded) {
       setFocusedPanel(panelId);
     }
@@ -37,12 +37,15 @@ export function FocusWrapper({ panelId, children, className }: FocusWrapperProps
   return (
     <div
       className={`${styles.wrapper} ${isExpanded ? styles.expanded : ''} ${className ?? ''}`}
-      onClick={handleClick}
     >
       {children}
-      {isExpanded && (
-        <button className={styles.collapseBtn} onClick={handleCollapse}>
+      {isExpanded ? (
+        <button className={styles.focusBtn} onClick={handleCollapse}>
           Esc
+        </button>
+      ) : (
+        <button className={styles.focusBtn} onClick={handleExpand}>
+          &#x26F6;
         </button>
       )}
     </div>
