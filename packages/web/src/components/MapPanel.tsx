@@ -186,7 +186,8 @@ export function MapPanel() {
     if (!mapRef.current || !AMap || !session) return;
 
     const lap = session.laps[currentLapIndex];
-    if (!lap || lap.points.length === 0) return;
+    const points = lap ? lap.points : session.points;
+    if (!points || points.length === 0) return;
 
     if (!markerRef.current) {
       markerRef.current = new AMap.CircleMarker({
@@ -199,9 +200,9 @@ export function MapPanel() {
       mapRef.current.add(markerRef.current);
     }
 
-    const targetTime = lap.points[0].timestampMs + playback.currentTime;
-    let closest = lap.points[0];
-    for (const p of lap.points) {
+    const targetTime = points[0].timestampMs + playback.currentTime;
+    let closest = points[0];
+    for (const p of points) {
       if (Math.abs(p.timestampMs - targetTime) < Math.abs(closest.timestampMs - targetTime)) {
         closest = p;
       }
@@ -220,7 +221,10 @@ export function MapPanel() {
       mapRef.current.remove(polylineRef.current);
     }
 
-    const path = session.points.map(
+    const source = session.points.length > 0 ? session.points : rawLog?.gpsLocation;
+    if (!source || source.length === 0) return;
+
+    const path = source.map(
       (p) => { const [lat, lng] = wgs84ToGcj02(p.latitude, p.longitude); return new AMap.LngLat(lng, lat); },
     );
 
@@ -234,7 +238,7 @@ export function MapPanel() {
       mapRef.current.add(polylineRef.current);
       mapRef.current.setFitView([polylineRef.current]);
     }
-  }, [session, session?.laps.length]);
+  }, [session, session?.laps.length, rawLog]);
 
   if (mapError) {
     return (
