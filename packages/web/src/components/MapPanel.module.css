@@ -31,3 +31,8 @@
   color: #666;
   font-size: 14px;
 }
+
+.map :global(.amap-logo),
+.map :global(.amap-copyright) {
+  display: none !important;
+}
