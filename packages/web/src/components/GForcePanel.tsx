@@ -45,17 +45,6 @@ export function GForcePanel() {
     ctx.lineTo(size - 10, cy);
     ctx.stroke();
 
-    // Labels
-    ctx.fillStyle = '#666';
-    ctx.font = '10px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('Accel', cx, 18);
-    ctx.fillText('Brake', cx, size - 4);
-    ctx.textAlign = 'left';
-    ctx.fillText('L', 8, cy + 4);
-    ctx.textAlign = 'right';
-    ctx.fillText('R', size - 8, cy + 4);
-
     // Find current G values
     let lateralG = 0;
     let longitudinalG = 0;
