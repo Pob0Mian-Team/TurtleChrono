@@ -63,5 +63,32 @@ export function useLogLoader() {
     }
   }, []);
 
-  return { loadFile, setGateAndProcess, selectCurrentLap, selectReferenceLap };
+  const treatAsSingleLap = useCallback(() => {
+    const { rawLog } = store.getState();
+    if (!rawLog) return;
+
+    const session = processSession(rawLog, {
+      pointA: { latitude: 90, longitude: 0 },
+      pointB: { latitude: 90.001, longitude: 0 },
+    });
+    if (session.points.length === 0) return;
+
+    const points = session.points;
+    store.getState().setSession({
+      points,
+      laps: [{
+        startIndex: 0,
+        endIndex: points.length - 1,
+        startTimeMs: points[0].timestampMs,
+        endTimeMs: points[points.length - 1].timestampMs,
+        durationMs: points[points.length - 1].timestampMs - points[0].timestampMs,
+        points,
+      }],
+      totalDistance: session.totalDistance,
+      bestLapIndex: 0,
+    });
+    store.getState().setCurrentLapIndex(0);
+  }, []);
+
+  return { loadFile, setGateAndProcess, selectCurrentLap, selectReferenceLap, treatAsSingleLap };
 }

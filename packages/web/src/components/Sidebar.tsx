@@ -19,7 +19,7 @@ export function Sidebar() {
   const gateMode = useSessionStore((s) => s.gateMode);
   const setGateMode = useSessionStore((s) => s.setGateMode);
   const error = useSessionStore((s) => s.error);
-  const { loadFile, selectCurrentLap, selectReferenceLap } = useLogLoader();
+  const { loadFile, selectCurrentLap, selectReferenceLap, treatAsSingleLap } = useLogLoader();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -76,11 +76,18 @@ export function Sidebar() {
 
       <p className={styles.sectionTitle}>Laps</p>
       {laps.length === 0 ? (
-        <p className={styles.empty}>
-          {rawLog
-            ? 'Set start/finish gate to split laps'
-            : 'Load a file to begin'}
-        </p>
+        <>
+          <p className={styles.empty}>
+            {rawLog
+              ? 'Set start/finish gate to split laps'
+              : 'Load a file to begin'}
+          </p>
+          {rawLog && (
+            <button className={styles.gateBtn} onClick={treatAsSingleLap}>
+              Treat as Single Lap
+            </button>
+          )}
+        </>
       ) : (
         <ul className={styles.lapList}>
           {laps.map((lap, i) => (
