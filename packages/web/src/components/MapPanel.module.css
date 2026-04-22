@@ -1,0 +1,33 @@
+.container {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+.gateHint {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(233, 69, 96, 0.9);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.noData {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+  font-size: 14px;
+}

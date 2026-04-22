@@ -1,0 +1,112 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: #16213e;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #888;
+  margin: 0;
+}
+
+.loadBtn {
+  padding: 8px 16px;
+  background: #0f3460;
+  color: #e0e0e0;
+  border: 1px solid #1a1a5e;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.loadBtn:hover {
+  background: #1a4a8a;
+}
+
+.gateBtn {
+  padding: 8px 16px;
+  background: #533483;
+  color: #e0e0e0;
+  border: 1px solid #7b2d8e;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.gateBtn:hover {
+  background: #6b44a8;
+}
+
+.gateBtn.active {
+  background: #e94560;
+  border-color: #e94560;
+}
+
+.lapList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lapItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.lapItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.lapItem.current {
+  background: #0f3460;
+}
+
+.lapItem.reference {
+  border: 1px solid #e94560;
+}
+
+.lapItem.best {
+  color: #4ecca3;
+}
+
+.lapTime {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 12px;
+}
+
+.refBtn {
+  padding: 2px 6px;
+  font-size: 10px;
+  background: #533483;
+  color: #e0e0e0;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.empty {
+  color: #666;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.error {
+  color: #e94560;
+  font-size: 12px;
+  background: rgba(233, 69, 96, 0.1);
+  padding: 8px;
+  border-radius: 4px;
+  margin: 0;
+}

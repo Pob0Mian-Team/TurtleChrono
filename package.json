@@ -1,0 +1,11 @@
+{
+  "name": "turtlechrono",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "dev": "npm run dev --workspace=@turtlechrono/web",
+    "build": "npm run build --workspace=@turtlechrono/core && npm run build --workspace=@turtlechrono/web",
+    "test": "npm run test --workspace=@turtlechrono/core",
+    "test:web": "npm run test --workspace=@turtlechrono/web"
+  }
+}

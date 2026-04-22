@@ -1,0 +1,45 @@
+.app {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  grid-template-rows: 1fr auto auto auto;
+  height: 100vh;
+  background: #1a1a2e;
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.sidebar {
+  grid-column: 1;
+  grid-row: 1 / 5;
+}
+
+.mapPanel {
+  grid-column: 2;
+  grid-row: 1;
+  min-height: 300px;
+}
+
+.middleRow {
+  grid-column: 2;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 4px;
+  min-height: 200px;
+}
+
+.chartPanel {
+  grid-column: 2;
+  grid-row: 3;
+  min-height: 180px;
+}
+
+.playbackBar {
+  grid-column: 2;
+  grid-row: 4;
+}
+
+.gap {
+  gap: 4px;
+  padding: 4px;
+}

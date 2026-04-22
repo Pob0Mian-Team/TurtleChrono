@@ -1,0 +1,44 @@
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: #16213e;
+  border-radius: 4px;
+}
+
+.playBtn {
+  background: none;
+  border: none;
+  color: #e0e0e0;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.scrubber {
+  flex: 1;
+  accent-color: #4ecca3;
+}
+
+.timeLabel {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  min-width: 100px;
+  text-align: center;
+}
+
+.speedBtn {
+  padding: 4px 10px;
+  background: #0f3460;
+  color: #e0e0e0;
+  border: 1px solid #1a1a5e;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.speedBtn.active {
+  background: #4ecca3;
+  color: #1a1a2e;
+}
