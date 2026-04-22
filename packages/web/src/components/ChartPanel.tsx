@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { createChart, type IChartApi, type ISeriesApi } from 'lightweight-charts';
+import { createChart, type IChartApi, type ISeriesApi, type UTCTimestamp } from 'lightweight-charts';
 import { useSessionStore } from '../store/session-store';
 import styles from './ChartPanel.module.css';
 
@@ -31,7 +31,7 @@ export function ChartPanel() {
       },
       crosshair: { mode: 0 },
       rightPriceScale: { borderColor: '#1a3a6a' },
-      timeScale: { borderColor: '#1a3a6a', timeVisible: false },
+      timeScale: { borderColor: '#1a3a6a', timeVisible: true, secondsVisible: true },
     });
 
     chartRef.current = chart;
@@ -72,20 +72,22 @@ export function ChartPanel() {
       chart.remove();
       chartRef.current = null;
     };
-  }, []);
+  }, [session]);
 
   // Update data when lap/delta changes
   useEffect(() => {
     if (!chartRef.current || !speedSeriesRef.current || !session) return;
 
     const lap = session.laps[currentLapIndex];
-    if (!lap || lap.points.length === 0) return;
+    const points = lap ? lap.points : session.points;
+    if (!points || points.length === 0) return;
 
-    const speedData = lap.points.map((p, i) => ({
-      time: i as unknown as string,
+    const speedData = points.map((p) => ({
+      time: (p.timestampMs / 1000) as UTCTimestamp,
       value: p.speedKmh,
     }));
     speedSeriesRef.current.setData(speedData as never);
+    chartRef.current.timeScale().fitContent();
 
     // Reference lap overlay
     if (refSpeedSeriesRef.current) {
@@ -93,7 +95,7 @@ export function ChartPanel() {
       refSpeedSeriesRef.current = null;
     }
 
-    if (referenceLapIndex !== null && referenceLapIndex !== currentLapIndex) {
+    if (referenceLapIndex !== null && referenceLapIndex !== currentLapIndex && session.laps.length > 0) {
       const refLap = session.laps[referenceLapIndex];
       if (refLap) {
         const refSeries = chartRef.current.addLineSeries({
@@ -103,10 +105,13 @@ export function ChartPanel() {
           priceLineVisible: false,
           lastValueVisible: false,
         });
-        const refData = refLap.points.map((p, i) => ({
-          time: i as unknown as string,
-          value: p.speedKmh,
-        }));
+        const refData = refLap.points.map((p, i) => {
+          const t = lap?.points[i]?.timestampMs ?? p.timestampMs;
+          return {
+            time: (t / 1000) as UTCTimestamp,
+            value: p.speedKmh,
+          };
+        });
         refSeries.setData(refData as never);
         refSpeedSeriesRef.current = refSeries;
       }
@@ -116,7 +121,7 @@ export function ChartPanel() {
     if (deltaSeriesRef.current) {
       if (lapDelta && lapDelta.points.length > 0) {
         const deltaData = lapDelta.points.map((dp, i) => ({
-          time: i as unknown as string,
+          time: (points[i].timestampMs / 1000) as UTCTimestamp,
           value: dp.deltaMs,
           color: dp.deltaMs <= 0 ? 'rgba(78, 204, 163, 0.6)' : 'rgba(233, 69, 96, 0.6)',
         }));
@@ -131,19 +136,20 @@ export function ChartPanel() {
   useEffect(() => {
     if (!chartRef.current || !session) return;
     const lap = session.laps[currentLapIndex];
-    if (!lap || lap.points.length === 0) return;
+    const points = lap ? lap.points : session.points;
+    if (!points || points.length === 0) return;
 
-    const targetTime = lap.points[0].timestampMs + playback.currentTime;
+    const targetTime = points[0].timestampMs + playback.currentTime;
     let closestIdx = 0;
-    for (let i = 0; i < lap.points.length; i++) {
-      if (Math.abs(lap.points[i].timestampMs - targetTime) < Math.abs(lap.points[closestIdx].timestampMs - targetTime)) {
+    for (let i = 0; i < points.length; i++) {
+      if (Math.abs(points[i].timestampMs - targetTime) < Math.abs(points[closestIdx].timestampMs - targetTime)) {
         closestIdx = i;
       }
     }
 
     chartRef.current.setCrosshairPosition(
-      lap.points[closestIdx].speedKmh,
-      closestIdx as unknown as string,
+      points[closestIdx].speedKmh,
+      (points[closestIdx].timestampMs / 1000) as UTCTimestamp,
       speedSeriesRef.current!,
     );
   }, [session, currentLapIndex, playback.currentTime]);
