@@ -23,6 +23,7 @@ export function MapPanel() {
   const gateClickPoints = useRef<{ latitude: number; longitude: number }[]>([]);
 
   const [mapError, setMapError] = useState<string | null>(null);
+  const [mapReady, setMapReady] = useState(false);
 
   const session = useSessionStore((s) => s.session);
   const rawLog = useSessionStore((s) => s.rawLog);
@@ -59,6 +60,10 @@ export function MapPanel() {
         viewMode: '3D',
         layers: [new AMap.TileLayer.Satellite()],
         zoom: 15,
+      });
+
+      mapRef.current.on('complete', () => {
+        setMapReady(true);
       });
 
       mapRef.current.on('click', (e: { lnglat: { getLat: () => number; getLng: () => number } }) => {
@@ -256,7 +261,7 @@ export function MapPanel() {
       )}
       <div
         ref={containerRef}
-        className={styles.map}
+        className={`${styles.map} ${mapReady ? styles.mapReady : ''}`}
         style={{ cursor: gateMode ? 'crosshair' : 'default' }}
       />
     </div>
