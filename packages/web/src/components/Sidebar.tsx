@@ -58,12 +58,20 @@ export function Sidebar() {
       {error && <p className={styles.error}>{error}</p>}
 
       {rawLog && !session && (
-        <button
-          className={`${styles.gateBtn} ${gateMode ? styles.active : ''}`}
-          onClick={() => setGateMode(!gateMode)}
-        >
-          {gateMode ? 'Cancel Gate' : 'Set S/F Gate'}
-        </button>
+        <>
+          {!import.meta.env.VITE_AMAP_KEY && (
+            <p className={styles.error}>
+              AMap API key not configured. Set VITE_AMAP_KEY in .env to enable gate selection.
+            </p>
+          )}
+          <button
+            className={`${styles.gateBtn} ${gateMode ? styles.active : ''}`}
+            onClick={() => setGateMode(!gateMode)}
+            disabled={!import.meta.env.VITE_AMAP_KEY}
+          >
+            {gateMode ? 'Cancel Gate' : 'Set S/F Gate'}
+          </button>
+        </>
       )}
 
       <p className={styles.sectionTitle}>Laps</p>

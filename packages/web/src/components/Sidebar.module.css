@@ -49,6 +49,11 @@
   border-color: #e94560;
 }
 
+.gateBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .lapList {
   list-style: none;
   padding: 0;
