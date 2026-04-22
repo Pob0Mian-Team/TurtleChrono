@@ -46,4 +46,6 @@
 .noData {
   color: #666;
   font-size: 12px;
+  text-align: center;
+  width: 100%;
 }
