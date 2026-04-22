@@ -16,15 +16,17 @@ export default function App() {
       <FocusWrapper panelId="map" className={`${styles.mapPanel} ${styles.gap}`}>
         <MapPanel />
       </FocusWrapper>
-      <div className={`${styles.middleRow} ${styles.gap}`}>
-        <FocusWrapper panelId="gforce">
-          <GForcePanel />
+      <div className={`${styles.middleSection} ${styles.gap}`}>
+        <div className={styles.leftColumn}>
+          <FocusWrapper panelId="gforce">
+            <GForcePanel />
+          </FocusWrapper>
+          <LapInfoPanel />
+        </div>
+        <FocusWrapper panelId="chart" className={styles.chartPanel}>
+          <ChartPanel />
         </FocusWrapper>
-        <LapInfoPanel />
       </div>
-      <FocusWrapper panelId="chart" className={`${styles.chartPanel} ${styles.gap}`}>
-        <ChartPanel />
-      </FocusWrapper>
       <div className={`${styles.playbackBar} ${styles.gap}`}>
         <PlaybackBar />
       </div>

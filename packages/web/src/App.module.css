@@ -19,18 +19,28 @@
   min-height: 300px;
 }
 
-.middleRow {
+.middleSection {
   grid-column: 2;
-  grid-row: 2;
+  grid-row: 2 / 4;
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 4px;
   min-height: 200px;
 }
 
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+}
+
+.leftColumn > *:first-child {
+  flex: 1;
+  min-height: 0;
+}
+
 .chartPanel {
-  grid-column: 2;
-  grid-row: 3;
   min-height: 180px;
 }
 
