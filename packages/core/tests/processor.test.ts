@@ -45,6 +45,26 @@ describe('filterGPS', () => {
     expect(result[0].fixType).toBe(3);
     expect(result[0].hdop).toBe(1.0);
   });
+
+  it('matches quality by nearest timestamp when timestamps differ', () => {
+    const locs: GPSLocationRecord[] = [
+      { timestampMs: 1000, latitude: 31.23, longitude: 121.47, speedKmh: 50, courseDeg: 0 },
+      { timestampMs: 2000, latitude: 31.24, longitude: 121.48, speedKmh: 60, courseDeg: 90 },
+      { timestampMs: 3000, latitude: 31.25, longitude: 121.49, speedKmh: 70, courseDeg: 180 },
+    ];
+    const quals: GPSQualityRecord[] = [
+      { timestampMs: 1050, hdop: 1.0, vdop: 1.0, fixQuality: 1, satellites: 10, fixType: 3 },
+      { timestampMs: 2100, hdop: 6.0, vdop: 8.0, fixQuality: 1, satellites: 4, fixType: 2 },
+      { timestampMs: 2950, hdop: 0.9, vdop: 1.0, fixQuality: 2, satellites: 12, fixType: 3 },
+    ];
+
+    const result = filterGPS(locs, quals, 5.0);
+    expect(result).toHaveLength(2);
+    expect(result[0].timestampMs).toBe(1000);
+    expect(result[0].hdop).toBeCloseTo(1.0, 2);
+    expect(result[1].timestampMs).toBe(3000);
+    expect(result[1].hdop).toBeCloseTo(0.9, 2);
+  });
 });
 
 describe('interpolateIMU', () => {

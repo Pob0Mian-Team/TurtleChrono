@@ -34,22 +34,37 @@ export function filterGPS(
     }));
   }
 
-  const qualityByTime = new Map<
-    number,
-    { hdop: number; fixType: number; satellites: number }
-  >();
-  for (const q of qualities) {
-    qualityByTime.set(q.timestampMs, {
-      hdop: q.hdop,
-      fixType: q.fixType,
-      satellites: q.satellites,
-    });
-  }
+  const sorted = [...qualities].sort((a, b) => a.timestampMs - b.timestampMs);
 
   const points: GPSPoint[] = [];
   for (const loc of locations) {
-    const q = qualityByTime.get(loc.timestampMs);
-    if (!q) continue;
+    // Binary search for nearest quality record by timestamp
+    let lo = 0;
+    let hi = sorted.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi) >>> 1;
+      if (sorted[mid].timestampMs < loc.timestampMs) {
+        lo = mid + 1;
+      } else {
+        hi = mid;
+      }
+    }
+
+    let q: GPSQualityRecord;
+    if (lo === 0 && sorted[0].timestampMs >= loc.timestampMs) {
+      q = sorted[0];
+    } else if (lo >= sorted.length) {
+      q = sorted[sorted.length - 1];
+    } else {
+      // Pick whichever of sorted[lo-1] and sorted[lo] is closer
+      const prev = sorted[lo - 1];
+      const next = sorted[lo];
+      q =
+        loc.timestampMs - prev.timestampMs <= next.timestampMs - loc.timestampMs
+          ? prev
+          : next;
+    }
+
     if (q.fixType < 3) continue;
     if (q.hdop > maxHdop) continue;
 
