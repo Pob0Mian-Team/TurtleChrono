@@ -31,7 +31,7 @@ export function ChartPanel() {
       },
       crosshair: { mode: 0 },
       rightPriceScale: { borderColor: '#1a3a6a' },
-      timeScale: { borderColor: '#1a3a6a', timeVisible: true, secondsVisible: true },
+      timeScale: { borderColor: '#1a3a6a', timeVisible: true, secondsVisible: true, fixLeftEdge: true, fixRightEdge: true },
     });
 
     chartRef.current = chart;
