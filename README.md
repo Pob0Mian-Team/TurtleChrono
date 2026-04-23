@@ -56,7 +56,7 @@ TurtleChrono/
 │   │       ├── parser.test.ts
 │   │       ├── processor.test.ts
 │   │       └── fixtures/
-│   │           └── log_002.bin # Real device log for integration testing
+│   │           └── test_log_0.bin # Real device log for integration testing
 │   └── web/                    # @turtlechrono/web — React SPA
 │       └── src/
 │           ├── store/          # Zustand session store

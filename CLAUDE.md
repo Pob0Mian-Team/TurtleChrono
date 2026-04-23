@@ -21,7 +21,7 @@ npx vitest run packages/core/tests/parser.test.ts
 
 This is a **npm workspaces** monorepo with two packages:
 
-- **`packages/core`** (`@turtlechrono/core`) — Pure TypeScript, no DOM. Binary log parser, GPS filtering, IMU interpolation, lap detection, and delta computation. Exported via `src/index.ts` barrel. Tests in `tests/` use a `LogBuilder` helper (`tests/helpers.ts`) for synthetic binary fixtures plus a real device log (`tests/fixtures/log_002.bin`).
+- **`packages/core`** (`@turtlechrono/core`) — Pure TypeScript, no DOM. Binary log parser, GPS filtering, IMU interpolation, lap detection, and delta computation. Exported via `src/index.ts` barrel. Tests in `tests/` use a `LogBuilder` helper (`tests/helpers.ts`) for synthetic binary fixtures plus a real device log (`tests/fixtures/test_log_0.bin`).
 - **`packages/web`** (`@turtlechrono/web`) — React 18 SPA. Imports `@turtlechrono/core` via Vite alias (resolves directly to `core/src/index.ts`, no build step needed). State is a single Zustand store (`src/store/session-store.ts`). Components are CSS Modules (`.module.css`).
 
 ### Data Pipeline

@@ -76,16 +76,19 @@ describe('parseLog', () => {
     expect(() => parseLog(buf)).toThrow(/unknown tag/i);
   });
 
-  it('parses real log_002.bin fixture without error', async () => {
+  it('parses real device log fixture', async () => {
     const { readFileSync } = await import('fs');
     const { resolve } = await import('path');
-    const buf = readFileSync(resolve(__dirname, 'fixtures/log_002.bin'));
+    const buf = readFileSync(resolve(__dirname, 'fixtures/test_log_0.bin'));
     const log = parseLog(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength));
 
+    expect(log.header).not.toBeNull();
     expect(log.gpsLocation.length).toBeGreaterThan(0);
     for (const rec of log.gpsLocation) {
       expect(Math.abs(rec.latitude)).toBeLessThanOrEqual(90);
       expect(Math.abs(rec.longitude)).toBeLessThanOrEqual(180);
     }
+    expect(log.imu.length).toBeGreaterThan(0);
+    expect(log.gpsQuality.length).toBeGreaterThan(0);
   });
 });
