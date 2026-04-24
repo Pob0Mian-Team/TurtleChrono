@@ -13,10 +13,10 @@ export default function App() {
       <div className={styles.sidebar}>
         <Sidebar />
       </div>
-      <FocusWrapper panelId="map" className={`${styles.mapPanel} ${styles.gap}`}>
+      <FocusWrapper panelId="map" className={styles.mapPanel}>
         <MapPanel />
       </FocusWrapper>
-      <div className={`${styles.middleSection} ${styles.gap}`}>
+      <div className={styles.middleSection}>
         <div className={styles.leftColumn}>
           <FocusWrapper panelId="gforce">
             <GForcePanel />
@@ -27,7 +27,7 @@ export default function App() {
           <ChartPanel />
         </FocusWrapper>
       </div>
-      <div className={`${styles.playbackBar} ${styles.gap}`}>
+      <div className={styles.playbackBar}>
         <PlaybackBar />
       </div>
     </div>

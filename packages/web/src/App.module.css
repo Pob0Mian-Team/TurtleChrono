@@ -1,7 +1,9 @@
 .app {
   display: grid;
   grid-template-columns: 220px 1fr;
-  grid-template-rows: 1fr auto auto auto;
+  grid-template-rows: 1fr auto auto;
+  column-gap: 4px;
+  padding: 4px;
   height: 100vh;
   background: #1a1a2e;
   color: #e0e0e0;
@@ -10,22 +12,24 @@
 
 .sidebar {
   grid-column: 1;
-  grid-row: 1 / 5;
+  grid-row: 1 / -1;
 }
 
 .mapPanel {
   grid-column: 2;
   grid-row: 1;
   min-height: 300px;
+  margin-bottom: 4px;
 }
 
 .middleSection {
   grid-column: 2;
-  grid-row: 2 / 4;
+  grid-row: 2;
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 4px;
   min-height: 200px;
+  margin-bottom: 4px;
 }
 
 .leftColumn {
@@ -46,10 +50,5 @@
 
 .playbackBar {
   grid-column: 2;
-  grid-row: 4;
-}
-
-.gap {
-  gap: 4px;
-  padding: 4px;
+  grid-row: 3;
 }
