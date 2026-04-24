@@ -31,7 +31,12 @@ export function ChartPanel() {
       },
       crosshair: { mode: 0 },
       rightPriceScale: { borderColor: '#1a3a6a' },
-      timeScale: { borderColor: '#1a3a6a', timeVisible: true, secondsVisible: true, fixLeftEdge: true, fixRightEdge: true },
+      timeScale: {
+        borderColor: '#1a3a6a',
+        fixLeftEdge: true,
+        fixRightEdge: true,
+        tickMarkFormatter: (d: number) => d >= 1000 ? `${(d / 1000).toFixed(1)}km` : `${d.toFixed(0)}m`,
+      },
     });
 
     chartRef.current = chart;
@@ -82,10 +87,16 @@ export function ChartPanel() {
     const points = lap ? lap.points : session.points;
     if (!points || points.length === 0) return;
 
-    const speedData = points.map((p) => ({
-      time: (p.timestampMs / 1000) as UTCTimestamp,
-      value: p.speedKmh,
-    }));
+    const baseDistance = points[0].distanceFromStart;
+
+    const speedData: { time: UTCTimestamp; value: number }[] = [];
+    let lastDist = -1;
+    for (const p of points) {
+      const d = Math.round(p.distanceFromStart - baseDistance);
+      if (d <= lastDist) continue;
+      lastDist = d;
+      speedData.push({ time: d as UTCTimestamp, value: p.speedKmh });
+    }
     speedSeriesRef.current.setData(speedData as never);
     chartRef.current.timeScale().fitContent();
 
@@ -105,13 +116,15 @@ export function ChartPanel() {
           priceLineVisible: false,
           lastValueVisible: false,
         });
-        const refData = refLap.points.map((p, i) => {
-          const t = lap?.points[i]?.timestampMs ?? p.timestampMs;
-          return {
-            time: (t / 1000) as UTCTimestamp,
-            value: p.speedKmh,
-          };
-        });
+        const refBase = refLap.points[0].distanceFromStart;
+        const refData: { time: UTCTimestamp; value: number }[] = [];
+        let refLastDist = -1;
+        for (const p of refLap.points) {
+          const d = Math.round(p.distanceFromStart - refBase);
+          if (d <= refLastDist) continue;
+          refLastDist = d;
+          refData.push({ time: d as UTCTimestamp, value: p.speedKmh });
+        }
         refSeries.setData(refData as never);
         refSpeedSeriesRef.current = refSeries;
       }
@@ -120,11 +133,18 @@ export function ChartPanel() {
     // Delta histogram
     if (deltaSeriesRef.current) {
       if (lapDelta && lapDelta.points.length > 0) {
-        const deltaData = lapDelta.points.map((dp, i) => ({
-          time: (points[i].timestampMs / 1000) as UTCTimestamp,
-          value: dp.deltaMs,
-          color: dp.deltaMs <= 0 ? 'rgba(78, 204, 163, 0.6)' : 'rgba(233, 69, 96, 0.6)',
-        }));
+        const deltaData: { time: UTCTimestamp; value: number; color: string }[] = [];
+        let deltaLastDist = -1;
+        for (const dp of lapDelta.points) {
+          const d = Math.round(dp.distance);
+          if (d <= deltaLastDist) continue;
+          deltaLastDist = d;
+          deltaData.push({
+            time: d as UTCTimestamp,
+            value: dp.deltaMs,
+            color: dp.deltaMs <= 0 ? 'rgba(78, 204, 163, 0.6)' : 'rgba(233, 69, 96, 0.6)',
+          });
+        }
         deltaSeriesRef.current.setData(deltaData as never);
       } else {
         deltaSeriesRef.current.setData([]);
@@ -149,7 +169,7 @@ export function ChartPanel() {
 
     chartRef.current.setCrosshairPosition(
       points[closestIdx].speedKmh,
-      (points[closestIdx].timestampMs / 1000) as UTCTimestamp,
+      (points[closestIdx].distanceFromStart - points[0].distanceFromStart) as UTCTimestamp,
       speedSeriesRef.current!,
     );
   }, [session, currentLapIndex, playback.currentTime]);
