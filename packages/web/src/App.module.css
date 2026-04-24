@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: 220px auto 1fr;
   grid-template-rows: 1fr auto;
-  column-gap: 4px;
+  gap: 4px;
   padding: 4px;
   height: 100vh;
   background: #1a1a2e;
@@ -22,16 +22,19 @@
   flex-direction: column;
   gap: 4px;
   min-height: 0;
+  overflow: hidden;
 }
 
 .mapPanel {
-  height: 30vh;
+  height: 35vh;
   aspect-ratio: 1;
+  flex-shrink: 0;
 }
 
 .gforcePanel {
-  height: 30vh;
+  height: 35vh;
   aspect-ratio: 1;
+  flex-shrink: 0;
 }
 
 .lapInfoPanel {
@@ -44,6 +47,8 @@
   grid-column: 3;
   grid-row: 1;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .playbackBar {

@@ -3,7 +3,9 @@
   flex-direction: column;
   gap: 4px;
   min-height: 0;
+  flex: 1;
   overflow: hidden;
+  height: 100%;
 }
 
 .chartSlot {
