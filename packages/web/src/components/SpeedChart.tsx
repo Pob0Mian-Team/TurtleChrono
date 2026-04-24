@@ -3,7 +3,6 @@ import uPlot from 'uplot';
 import 'uplot/dist/uPlot.min.css';
 import { useSessionStore } from '../store/session-store';
 import { buildSpeedData, buildRefSpeedData, formatDistance } from '../utils/chart-helpers';
-import { useChartScrub } from '../hooks/useChartScrub';
 import { usePlaybackCrosshair } from '../hooks/usePlaybackCrosshair';
 import styles from './SpeedChart.module.css';
 
@@ -18,6 +17,12 @@ export function SpeedChart() {
   const session = useSessionStore((s) => s.session);
   const currentLapIndex = useSessionStore((s) => s.currentLapIndex);
   const referenceLapIndex = useSessionStore((s) => s.referenceLapIndex);
+  const setPlayback = useSessionStore((s) => s.setPlayback);
+
+  const sessionRef = useRef(session);
+  const currentLapIndexRef = useRef(currentLapIndex);
+  sessionRef.current = session;
+  currentLapIndexRef.current = currentLapIndex;
 
   const getPoints = useCallback(() => {
     if (!session) return null;
@@ -44,8 +49,6 @@ export function SpeedChart() {
     renderTooltip,
   );
 
-  useChartScrub(chartRef, distancesRef);
-
   useEffect(() => {
     if (!containerRef.current) return;
     const container = containerRef.current;
@@ -67,13 +70,7 @@ export function SpeedChart() {
           stroke: '#888',
           values: (_u: uPlot, ticks: number[]) =>
             ticks.map(formatDistance),
-          size: (self: uPlot, values: string[] | undefined, axisIdx: number, cycleNum: number) => {
-            const axis = self.axes[axisIdx];
-            if (cycleNum > 1) return axis._size;
-            if (!values || values.length === 0) return axis._size;
-            const fontHeight = axis.font[1] / devicePixelRatio;
-            return Math.ceil(axis.ticks.size + axis.gap + fontHeight + 2);
-          },
+          size: 28,
         },
         {
           scale: 'speed',
@@ -82,14 +79,7 @@ export function SpeedChart() {
           grid: { stroke: '#1a3a6a' },
           values: (_u: uPlot, ticks: number[]) =>
             ticks.map((v) => `${v.toFixed(0)} km/h`),
-          size: (self: uPlot, values: string[] | undefined, axisIdx: number, cycleNum: number) => {
-            const axis = self.axes[axisIdx];
-            if (cycleNum > 1) return axis._size;
-            const longest = (values ?? []).reduce((a, v) => (v.length > a.length ? v : a), '');
-            if (!longest) return axis._size;
-            self.ctx.font = axis.font[0];
-            return Math.ceil(axis.ticks.size + axis.gap + self.ctx.measureText(longest).width / devicePixelRatio + 4);
-          },
+          size: 56,
         },
       ],
       series: [
@@ -129,7 +119,58 @@ export function SpeedChart() {
     });
     ro.observe(container);
 
+    const over = chart.over;
+    let dragging = false;
+
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.button !== 0) return;
+      dragging = true;
+      over.setPointerCapture(e.pointerId);
+      scrubAtPixel(e.offsetX);
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!dragging) return;
+      scrubAtPixel(e.offsetX);
+    };
+
+    const onPointerUp = () => {
+      dragging = false;
+    };
+
+    function scrubAtPixel(pixelX: number) {
+      const c = chartRef.current;
+      const sess = sessionRef.current;
+      const curIdx = currentLapIndexRef.current;
+      if (!sess || !c) return;
+      const lap = sess.laps[curIdx];
+      const pts = lap ? lap.points : sess.points;
+      if (!pts || pts.length === 0 || distancesRef.current.length === 0) return;
+      try {
+        const distance = c.posToVal(pixelX, 'x');
+        const clickDist = distance + pts[0].distanceFromStart;
+        let closest = pts[0];
+        for (const p of pts) {
+          if (
+            Math.abs(p.distanceFromStart - clickDist) <
+            Math.abs(closest.distanceFromStart - clickDist)
+          ) {
+            closest = p;
+          }
+        }
+        setPlayback({ currentTime: closest.timestampMs - pts[0].timestampMs });
+      } catch {
+      }
+    }
+
+    over.addEventListener('pointerdown', onPointerDown);
+    over.addEventListener('pointermove', onPointerMove);
+    over.addEventListener('pointerup', onPointerUp);
+
     return () => {
+      over.removeEventListener('pointerdown', onPointerDown);
+      over.removeEventListener('pointermove', onPointerMove);
+      over.removeEventListener('pointerup', onPointerUp);
       ro.disconnect();
       vLine.remove();
       tooltip.remove();
@@ -138,7 +179,7 @@ export function SpeedChart() {
       vLineRef.current = null;
       tooltipRef.current = null;
     };
-  }, [positionVLine]);
+  }, [positionVLine, setPlayback]);
 
   useEffect(() => {
     const points = getPoints();
