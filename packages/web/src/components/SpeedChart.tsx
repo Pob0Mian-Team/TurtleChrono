@@ -31,7 +31,7 @@ export function SpeedChart() {
   }, [session, currentLapIndex]);
 
   const renderTooltip = useCallback(
-    (speedKmh: number, refSpeedKmh?: number) => {
+    (speedKmh: number, refSpeedKmh: number | undefined, _distance: number) => {
       let html = `<div style="color:#4ecca3">${speedKmh.toFixed(0)} km/h</div>`;
       if (refSpeedKmh !== undefined) {
         html += `<div style="color:#e94560">${refSpeedKmh.toFixed(0)} km/h</div>`;

@@ -18,6 +18,9 @@ export function DeltaChart() {
   const lapDelta = useSessionStore((s) => s.lapDelta);
   const setPlayback = useSessionStore((s) => s.setPlayback);
 
+  const lapDeltaRef = useRef(lapDelta);
+  lapDeltaRef.current = lapDelta;
+
   const sessionRef = useRef(session);
   const currentLapIndexRef = useRef(currentLapIndex);
   sessionRef.current = session;
@@ -30,8 +33,20 @@ export function DeltaChart() {
   }, [session, currentLapIndex]);
 
   const renderTooltip = useCallback(
-    (_speedKmh: number, _refSpeedKmh?: number) => {
-      return `<div style="color:#4ecca3">Delta</div>`;
+    (_speedKmh: number, _refSpeedKmh: number | undefined, distance: number) => {
+      const deltas = lapDeltaRef.current?.points;
+      if (!deltas || deltas.length === 0) {
+        return `<div style="color:#666">No ref lap</div>`;
+      }
+      let closest = deltas[0];
+      for (const d of deltas) {
+        if (Math.abs(d.distance - distance) < Math.abs(closest.distance - distance)) {
+          closest = d;
+        }
+      }
+      const v = closest.deltaMs;
+      const prefix = v >= 0 ? '+' : '';
+      return `<div style="color:${v >= 0 ? '#e94560' : '#4ecca3'}">${prefix}${(v / 1000).toFixed(3)}s</div>`;
     },
     [],
   );

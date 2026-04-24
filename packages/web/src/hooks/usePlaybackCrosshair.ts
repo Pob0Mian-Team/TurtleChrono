@@ -7,7 +7,7 @@ export function usePlaybackCrosshair(
   distancesRef: React.RefObject<number[]>,
   vLineRef: React.RefObject<HTMLDivElement | null>,
   tooltipRef: React.RefObject<HTMLDivElement | null>,
-  renderTooltip: (speedKmh: number, refSpeedKmh?: number) => string,
+  renderTooltip: (speedKmh: number, refSpeedKmh: number | undefined, distance: number) => string,
 ) {
   const sessionRef = useRef(useSessionStore.getState().session);
   const currentLapIndexRef = useRef(useSessionStore.getState().currentLapIndex);
@@ -77,7 +77,7 @@ export function usePlaybackCrosshair(
         refSpeed = refClosest.speedKmh;
       }
 
-      tooltip.innerHTML = renderTooltip(points[closestIdx].speedKmh, refSpeed);
+      tooltip.innerHTML = renderTooltip(points[closestIdx].speedKmh, refSpeed, distance);
       tooltip.style.display = 'block';
       tooltip.style.left = xPos + 8 + 'px';
     } catch {
