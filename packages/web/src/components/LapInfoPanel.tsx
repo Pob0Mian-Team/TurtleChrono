@@ -33,16 +33,24 @@ export function LapInfoPanel() {
 
   const bestLap = session.laps[bestLapIndex];
 
-  let currentSpeed = 0;
+  let closestPointIndex = -1;
   if (lap.points.length > 0) {
     const targetTime = lap.points[0].timestampMs + playback.currentTime;
-    let closest = lap.points[0];
-    for (const p of lap.points) {
-      if (Math.abs(p.timestampMs - targetTime) < Math.abs(closest.timestampMs - targetTime)) {
-        closest = p;
+    let closestDist = Infinity;
+    for (let i = 0; i < lap.points.length; i++) {
+      const dist = Math.abs(lap.points[i].timestampMs - targetTime);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestPointIndex = i;
       }
     }
-    currentSpeed = closest.speedKmh;
+  }
+
+  const currentSpeed = closestPointIndex >= 0 ? lap.points[closestPointIndex].speedKmh : 0;
+
+  let currentDeltaMs: number | null = null;
+  if (lapDelta && closestPointIndex >= 0 && closestPointIndex < lapDelta.points.length) {
+    currentDeltaMs = lapDelta.points[closestPointIndex].deltaMs;
   }
 
   return (
@@ -67,15 +75,15 @@ export function LapInfoPanel() {
           </span>
         </div>
       )}
-      {lapDelta && (
+      {currentDeltaMs !== null && (
         <div className={styles.row}>
           <span className={styles.label}>Delta</span>
           <span
             className={`${styles.value} ${
-              lapDelta.totalTimeDeltaMs >= 0 ? styles.deltaPos : styles.deltaNeg
+              currentDeltaMs >= 0 ? styles.deltaPos : styles.deltaNeg
             }`}
           >
-            {formatDelta(lapDelta.totalTimeDeltaMs)}
+            {formatDelta(currentDeltaMs)}
           </span>
         </div>
       )}
