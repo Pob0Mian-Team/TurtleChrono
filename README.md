@@ -13,7 +13,6 @@ Karting telemetry log viewer for the [TurtleChrono](https://github.com/nicholasg
 - **G-force ball** — real-time lateral and longitudinal G visualization with fading trail
 - **Speed and delta charts** — TradingView Lightweight Charts with crosshair synced to playback
 - **Animated playback** — play/pause, scrub, and speed control (1x / 2x / 4x)
-- **Click-to-focus panels** — click any panel to expand; Esc to return to dashboard
 
 ## Quick Start
 
@@ -22,7 +21,7 @@ Karting telemetry log viewer for the [TurtleChrono](https://github.com/nicholasg
 npm install
 
 # Set up AMap API key (required for map)
-cp .env.example .env
+cp packages/web/.env.example packages/web/.env
 # Edit .env with your key from https://lbs.amap.com
 
 # Start dev server
@@ -64,7 +63,7 @@ TurtleChrono/
 │           └── components/     # MapPanel, ChartPanel, GForcePanel, etc.
 ├── docs/
 │   └── log_format.md           # Binary log format reference
-└── .env.example
+└── packages/web/.env.example   # Vite env template (copy to .env)
 ```
 
 ## Tech Stack
@@ -76,14 +75,14 @@ TurtleChrono/
 | Language | TypeScript | Type safety for binary parsing |
 | State | Zustand | Lightweight, works in React Native |
 | Map | AMap JS API 2.0 | Best satellite imagery for China |
-| Charts | Lightweight Charts | Fast time-series rendering |
+| Charts | uPlot | Fast time-series rendering |
 | G-force | HTML Canvas | No extra dependency needed |
 | Styling | CSS Modules | Scoped per component |
 | Testing | Vitest | Native Vite integration |
 
 ## Configuration
 
-Create a `.env` file in the project root with your Gaode Maps API credentials:
+Create a `packages/web/.env` file with your Gaode Maps API credentials:
 
 ```
 VITE_AMAP_KEY=your_amap_key_here

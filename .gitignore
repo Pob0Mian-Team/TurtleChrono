@@ -40,5 +40,9 @@ coverage/
 # Editor / IDE
 *.local
 
-# Claude Code
+# Agent instruction files
+AGENTS.md
+CLAUDE.md
 .superpowers/
+docs/superpowers/
+
