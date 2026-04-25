@@ -20,6 +20,7 @@ export function MapPanel() {
   const gateMarkersRef = useRef<any[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const gateLineRef = useRef<any>(null);
+  const initDrawn = useRef(false);
   const gateClickPoints = useRef<{ latitude: number; longitude: number }[]>([]);
 
   const [mapError, setMapError] = useState<string | null>(null);
@@ -59,8 +60,28 @@ export function MapPanel() {
       mapRef.current = new AMap.Map(containerRef.current, {
         viewMode: '3D',
         layers: [new AMap.TileLayer.Satellite()],
-        zoom: 15,
       });
+
+      {
+        const state = useSessionStore.getState();
+        if (state.rawLog && state.rawLog.gpsLocation.length > 0) {
+          const path = state.rawLog.gpsLocation.map(
+            (p: { latitude: number; longitude: number }) => {
+              const [lat, lng] = wgs84ToGcj02(p.latitude, p.longitude);
+              return new AMap.LngLat(lng, lat);
+            },
+          );
+          polylineRef.current = new AMap.Polyline({
+            path,
+            strokeColor: '#fff',
+            strokeWeight: 2,
+            strokeOpacity: 0.7,
+          });
+          mapRef.current.add(polylineRef.current);
+          mapRef.current.setFitView([polylineRef.current], true);
+          initDrawn.current = true;
+        }
+      }
 
       mapRef.current.on('complete', () => {
         setMapReady(true);
@@ -114,20 +135,15 @@ export function MapPanel() {
     }
   }, [AMap, mapError, setGateMode, setGateAndProcess]);
 
-  // Center map on raw GPS data
-  useEffect(() => {
-    if (!mapRef.current || !AMap || !rawLog) return;
-    if (rawLog.gpsLocation.length === 0) return;
-
-    const first = rawLog.gpsLocation[0];
-    const [gcjLat, gcjLng] = wgs84ToGcj02(first.latitude, first.longitude);
-    mapRef.current.setCenter([gcjLng, gcjLat]);
-    mapRef.current.setZoom(15);
-  }, [rawLog]);
-
   // Draw raw GPS trace before session is processed
   useEffect(() => {
     if (!mapRef.current || !AMap || !rawLog) return;
+
+    if (initDrawn.current) {
+      initDrawn.current = false;
+      return;
+    }
+
     if (session) {
       if (polylineRef.current) {
         mapRef.current.remove(polylineRef.current);
@@ -141,7 +157,10 @@ export function MapPanel() {
     }
 
     const path = rawLog.gpsLocation.map(
-      (p) => { const [lat, lng] = wgs84ToGcj02(p.latitude, p.longitude); return new AMap.LngLat(lng, lat); },
+      (p: { latitude: number; longitude: number }) => {
+        const [lat, lng] = wgs84ToGcj02(p.latitude, p.longitude);
+        return new AMap.LngLat(lng, lat);
+      },
     );
 
     if (path.length > 0) {
@@ -152,9 +171,9 @@ export function MapPanel() {
         strokeOpacity: 0.7,
       });
       mapRef.current.add(polylineRef.current);
-      mapRef.current.setFitView([polylineRef.current]);
+      mapRef.current.setFitView([polylineRef.current], true);
     }
-  }, [rawLog, session]);
+  }, [rawLog, session, mapReady]);
 
   // Draw track polyline colored by delta
   useEffect(() => {
@@ -178,7 +197,6 @@ export function MapPanel() {
       strokeOpacity: 0.9,
     });
     mapRef.current.add(polylineRef.current);
-    mapRef.current.setFitView([polylineRef.current]);
   }, [session, currentLapIndex]);
 
   // Moving position marker during playback
@@ -236,7 +254,6 @@ export function MapPanel() {
         strokeOpacity: 0.7,
       });
       mapRef.current.add(polylineRef.current);
-      mapRef.current.setFitView([polylineRef.current]);
     }
   }, [session, session?.laps.length, rawLog]);
 
