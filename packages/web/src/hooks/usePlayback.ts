@@ -8,6 +8,10 @@ export function usePlayback() {
   const setPlayback = useSessionStore((s) => s.setPlayback);
   const rafRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
+  const currentTimeRef = useRef(playback.currentTime);
+  currentTimeRef.current = playback.currentTime;
+  const speedRef = useRef(playback.speed);
+  speedRef.current = playback.speed;
 
   const lap = session?.laps[currentLapIndex];
   const lapDuration = lap?.durationMs ?? 0;
@@ -18,10 +22,11 @@ export function usePlayback() {
         lastTimeRef.current = timestamp;
       }
 
-      const deltaMs = (timestamp - lastTimeRef.current) * playback.speed;
+      const deltaMs = (timestamp - lastTimeRef.current) * speedRef.current;
       lastTimeRef.current = timestamp;
 
-      const newTime = playback.currentTime + deltaMs;
+      const newTime = currentTimeRef.current + deltaMs;
+      currentTimeRef.current = newTime;
 
       if (newTime >= lapDuration) {
         setPlayback({ currentTime: lapDuration, isPlaying: false });
@@ -31,7 +36,7 @@ export function usePlayback() {
       setPlayback({ currentTime: newTime });
       rafRef.current = requestAnimationFrame(animate);
     },
-    [playback.currentTime, playback.speed, lapDuration, setPlayback],
+    [lapDuration, setPlayback],
   );
 
   useEffect(() => {
