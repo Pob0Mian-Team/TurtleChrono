@@ -14,10 +14,10 @@ export default function App() {
         <Sidebar />
       </div>
       <div className={styles.leftColumn}>
-        <FocusWrapper panelId="map" className={styles.mapPanel}>
+        <FocusWrapper className={styles.mapPanel}>
           <MapPanel />
         </FocusWrapper>
-        <FocusWrapper panelId="gforce" className={styles.gforcePanel}>
+        <FocusWrapper className={styles.gforcePanel}>
           <GForcePanel />
         </FocusWrapper>
         <div className={styles.lapInfoPanel}>

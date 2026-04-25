@@ -76,6 +76,7 @@ export function MapPanel() {
             strokeColor: '#fff',
             strokeWeight: 2,
             strokeOpacity: 0.7,
+            zIndex: 10,
           });
           mapRef.current.add(polylineRef.current);
           mapRef.current.setFitView([polylineRef.current], true);
@@ -97,7 +98,7 @@ export function MapPanel() {
         // Draw marker for this gate point (in GCJ-02 for AMap)
         const gateMarker = new AMap.CircleMarker({
           center: [gcjLng, gcjLat],
-          radius: 6,
+          radius: 3,
           fillColor: '#e94560',
           fillOpacity: 1,
           strokeColor: '#fff',
@@ -110,17 +111,32 @@ export function MapPanel() {
           // Draw gate line
           const [gcjA_lat, gcjA_lng] = wgs84ToGcj02(gateClickPoints.current[0].latitude, gateClickPoints.current[0].longitude);
           const [gcjB_lat, gcjB_lng] = wgs84ToGcj02(gateClickPoints.current[1].latitude, gateClickPoints.current[1].longitude);
-          gateLineRef.current = new AMap.Polyline({
-            path: [
-              new AMap.LngLat(gcjA_lng, gcjA_lat),
-              new AMap.LngLat(gcjB_lng, gcjB_lat),
-            ],
-            strokeColor: '#e94560',
-            strokeWeight: 3,
-            strokeOpacity: 0.9,
-            strokeStyle: 'dashed',
-          });
-          mapRef.current.add(gateLineRef.current);
+          const gatePath = [
+            new AMap.LngLat(gcjA_lng, gcjA_lat),
+            new AMap.LngLat(gcjB_lng, gcjB_lat),
+          ];
+          gateLineRef.current = [
+            new AMap.Polyline({
+              path: gatePath,
+              strokeColor: '#000',
+              strokeWeight: 3,
+              strokeOpacity: 1,
+              zIndex: 20,
+            }),
+            new AMap.Polyline({
+              path: gatePath,
+              strokeColor: '#fff',
+              strokeWeight: 3,
+              strokeOpacity: 1,
+              strokeStyle: 'dashed',
+              strokeDasharray: [4, 4],
+              zIndex: 21,
+            }),
+          ];
+          gateLineRef.current.forEach((l) => mapRef.current.add(l));
+
+          gateMarkersRef.current.forEach((m) => mapRef.current.remove(m));
+          gateMarkersRef.current = [];
 
           setGateMode(false);
           setGateAndProcess({
@@ -169,6 +185,7 @@ export function MapPanel() {
         strokeColor: '#fff',
         strokeWeight: 2,
         strokeOpacity: 0.7,
+        zIndex: 10,
       });
       mapRef.current.add(polylineRef.current);
       mapRef.current.setFitView([polylineRef.current], true);
@@ -195,6 +212,7 @@ export function MapPanel() {
       strokeColor: '#4ecca3',
       strokeWeight: 3,
       strokeOpacity: 0.9,
+      zIndex: 10,
     });
     mapRef.current.add(polylineRef.current);
   }, [session, currentLapIndex]);
@@ -214,6 +232,7 @@ export function MapPanel() {
         fillOpacity: 1,
         strokeColor: '#fff',
         strokeWeight: 2,
+        zIndex: 30,
       });
       mapRef.current.add(markerRef.current);
     }
@@ -252,6 +271,7 @@ export function MapPanel() {
         strokeColor: '#fff',
         strokeWeight: 2,
         strokeOpacity: 0.7,
+        zIndex: 10,
       });
       mapRef.current.add(polylineRef.current);
     }
@@ -277,7 +297,7 @@ export function MapPanel() {
     <div className={styles.container} style={{ position: 'relative' }}>
       {gateMode && (
         <div className={styles.gateHint}>
-          Click two points on the map to set the start/finish gate
+          Click two points
         </div>
       )}
       <div

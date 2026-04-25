@@ -16,7 +16,6 @@ interface SessionStore {
   referenceLapIndex: number | null;
   startFinishGate: Gate | null;
   playback: PlaybackState;
-  focusedPanel: string | null;
   lapDelta: LapDelta | null;
   gateMode: boolean;
   error: string | null;
@@ -28,7 +27,6 @@ interface SessionStore {
   setReferenceLapIndex: (index: number | null) => void;
   setStartFinishGate: (gate: Gate | null) => void;
   setPlayback: (partial: Partial<PlaybackState>) => void;
-  setFocusedPanel: (panel: string | null) => void;
   setLapDelta: (delta: LapDelta | null) => void;
   setGateMode: (mode: boolean) => void;
   setError: (error: string | null) => void;
@@ -47,7 +45,6 @@ const initialState = {
     isPlaying: false,
     speed: 1 as const,
   },
-  focusedPanel: null as string | null,
   lapDelta: null as LapDelta | null,
   gateMode: false,
   error: null as string | null,
@@ -64,7 +61,6 @@ export const useSessionStore = create<SessionStore>((set) => ({
   setStartFinishGate: (startFinishGate) => set({ startFinishGate }),
   setPlayback: (partial) =>
     set((state) => ({ playback: { ...state.playback, ...partial } })),
-  setFocusedPanel: (focusedPanel) => set({ focusedPanel }),
   setLapDelta: (lapDelta) => set({ lapDelta }),
   setGateMode: (gateMode) => set({ gateMode }),
   setError: (error) => set({ error }),
