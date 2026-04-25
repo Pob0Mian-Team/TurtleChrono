@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import type { RawLog, ProcessedSession, Gate, LapDelta } from '@turtlechrono/core';
 
+export type ChartType = 'speed' | 'delta';
+
 interface PlaybackState {
   currentTime: number;
   isPlaying: boolean;
@@ -18,6 +20,7 @@ interface SessionStore {
   lapDelta: LapDelta | null;
   gateMode: boolean;
   error: string | null;
+  enabledCharts: ChartType[];
 
   setRawLog: (log: RawLog) => void;
   setSession: (session: ProcessedSession) => void;
@@ -30,6 +33,7 @@ interface SessionStore {
   setGateMode: (mode: boolean) => void;
   setError: (error: string | null) => void;
   reset: () => void;
+  toggleChart: (type: ChartType) => void;
 }
 
 const initialState = {
@@ -47,6 +51,7 @@ const initialState = {
   lapDelta: null as LapDelta | null,
   gateMode: false,
   error: null as string | null,
+  enabledCharts: ['speed', 'delta'] as ChartType[],
 };
 
 export const useSessionStore = create<SessionStore>((set) => ({
@@ -64,4 +69,13 @@ export const useSessionStore = create<SessionStore>((set) => ({
   setGateMode: (gateMode) => set({ gateMode }),
   setError: (error) => set({ error }),
   reset: () => set(initialState),
+  toggleChart: (type) =>
+    set((state) => {
+      const has = state.enabledCharts.includes(type);
+      if (!has) {
+        return { enabledCharts: [...state.enabledCharts, type] };
+      }
+      if (state.enabledCharts.length <= 1) return {};
+      return { enabledCharts: state.enabledCharts.filter((t) => t !== type) };
+    }),
 }));

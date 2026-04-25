@@ -5,6 +5,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  height: 100%;
+  justify-content: center;
 }
 
 .row {
@@ -39,7 +41,6 @@
 }
 
 .speed {
-  font-size: 28px;
   color: #4ecca3;
 }
 
@@ -48,4 +49,5 @@
   font-size: 12px;
   text-align: center;
   width: 100%;
+  margin: auto;
 }

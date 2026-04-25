@@ -1,8 +1,8 @@
 .app {
   display: grid;
-  grid-template-columns: 220px 1fr;
-  grid-template-rows: 1fr auto auto;
-  column-gap: 4px;
+  grid-template-columns: 220px auto 1fr;
+  grid-template-rows: 1fr auto;
+  gap: 4px;
   padding: 4px;
   height: 100vh;
   background: #1a1a2e;
@@ -15,40 +15,43 @@
   grid-row: 1 / -1;
 }
 
-.mapPanel {
+.leftColumn {
   grid-column: 2;
   grid-row: 1;
-  min-height: 300px;
-  margin-bottom: 4px;
-}
-
-.middleSection {
-  grid-column: 2;
-  grid-row: 2;
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 4px;
-  min-height: 200px;
-  margin-bottom: 4px;
-}
-
-.leftColumn {
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-height: 0;
+  overflow: hidden;
 }
 
-.leftColumn > *:first-child {
+.mapPanel {
+  height: 35vh;
+  aspect-ratio: 1;
+  flex-shrink: 0;
+}
+
+.gforcePanel {
+  height: 35vh;
+  aspect-ratio: 1;
+  flex-shrink: 0;
+}
+
+.lapInfoPanel {
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
 }
 
-.chartPanel {
-  min-height: 180px;
+.chartColumn {
+  grid-column: 3;
+  grid-row: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .playbackBar {
-  grid-column: 2;
-  grid-row: 3;
+  grid-column: 2 / -1;
+  grid-row: 2;
 }

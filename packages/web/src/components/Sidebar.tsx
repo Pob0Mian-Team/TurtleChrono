@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { useSessionStore } from '../store/session-store';
+import { useSessionStore, type ChartType } from '../store/session-store';
 import { useLogLoader } from '../hooks/useLogLoader';
 import styles from './Sidebar.module.css';
 
@@ -10,6 +10,12 @@ function formatLapTime(ms: number): string {
   return `${min}:${sec.toFixed(3).padStart(6, '0')}`;
 }
 
+const ALL_CHART_TYPES: ChartType[] = ['speed', 'delta'];
+const CHART_LABELS: Record<ChartType, string> = {
+  speed: 'Speed',
+  delta: 'Delta',
+};
+
 export function Sidebar() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const session = useSessionStore((s) => s.session);
@@ -19,6 +25,8 @@ export function Sidebar() {
   const gateMode = useSessionStore((s) => s.gateMode);
   const setGateMode = useSessionStore((s) => s.setGateMode);
   const error = useSessionStore((s) => s.error);
+  const enabledCharts = useSessionStore((s) => s.enabledCharts);
+  const toggleChart = useSessionStore((s) => s.toggleChart);
   const { loadFile, selectCurrentLap, selectReferenceLap, treatAsSingleLap } = useLogLoader();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,23 +79,19 @@ export function Sidebar() {
           >
             {gateMode ? 'Cancel Gate' : 'Set S/F Gate'}
           </button>
+          <button className={styles.gateBtn} onClick={treatAsSingleLap}>
+            Treat as Single Lap
+          </button>
         </>
       )}
 
       <p className={styles.sectionTitle}>Laps</p>
       {laps.length === 0 ? (
-        <>
-          <p className={styles.empty}>
-            {rawLog
-              ? 'Set start/finish gate to split laps'
-              : 'Load a file to begin'}
-          </p>
-          {rawLog && (
-            <button className={styles.gateBtn} onClick={treatAsSingleLap}>
-              Treat as Single Lap
-            </button>
-          )}
-        </>
+        <p className={styles.empty}>
+          {rawLog
+            ? 'Set start/finish gate to split laps'
+            : 'Load a file to begin'}
+        </p>
       ) : (
         <ul className={styles.lapList}>
           {laps.map((lap, i) => (
@@ -102,7 +106,7 @@ export function Sidebar() {
               }`}
               onClick={() => selectCurrentLap(i)}
             >
-              <span>
+              <span className={styles.lapLabel}>
                 L{i + 1}
                 {i === session!.bestLapIndex ? ' ★' : ''}
               </span>
@@ -120,6 +124,24 @@ export function Sidebar() {
           ))}
         </ul>
       )}
+
+      <div className={styles.chartsSection}>
+        <p className={styles.sectionTitle}>Charts</p>
+        <div className={styles.chipsContainer}>
+        {ALL_CHART_TYPES.map((type) => {
+          const enabled = enabledCharts.includes(type);
+          return (
+            <button
+              key={type}
+              className={`${styles.chip} ${enabled ? styles.chipEnabled : styles.chipDisabled}`}
+              onClick={() => toggleChart(type)}
+            >
+              {enabled ? '✓ ' : ''}{CHART_LABELS[type]}
+            </button>
+          );
+        })}
+      </div>
+      </div>
     </div>
   );
 }
