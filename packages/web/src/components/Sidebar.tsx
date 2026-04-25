@@ -79,23 +79,19 @@ export function Sidebar() {
           >
             {gateMode ? 'Cancel Gate' : 'Set S/F Gate'}
           </button>
+          <button className={styles.gateBtn} onClick={treatAsSingleLap}>
+            Treat as Single Lap
+          </button>
         </>
       )}
 
       <p className={styles.sectionTitle}>Laps</p>
       {laps.length === 0 ? (
-        <>
-          <p className={styles.empty}>
-            {rawLog
-              ? 'Set start/finish gate to split laps'
-              : 'Load a file to begin'}
-          </p>
-          {rawLog && (
-            <button className={styles.gateBtn} onClick={treatAsSingleLap}>
-              Treat as Single Lap
-            </button>
-          )}
-        </>
+        <p className={styles.empty}>
+          {rawLog
+            ? 'Set start/finish gate to split laps'
+            : 'Load a file to begin'}
+        </p>
       ) : (
         <ul className={styles.lapList}>
           {laps.map((lap, i) => (
@@ -110,7 +106,7 @@ export function Sidebar() {
               }`}
               onClick={() => selectCurrentLap(i)}
             >
-              <span>
+              <span className={styles.lapLabel}>
                 L{i + 1}
                 {i === session!.bestLapIndex ? ' ★' : ''}
               </span>
@@ -129,8 +125,9 @@ export function Sidebar() {
         </ul>
       )}
 
-      <p className={styles.sectionTitle}>Charts</p>
-      <div className={styles.chipsContainer}>
+      <div className={styles.chartsSection}>
+        <p className={styles.sectionTitle}>Charts</p>
+        <div className={styles.chipsContainer}>
         {ALL_CHART_TYPES.map((type) => {
           const enabled = enabledCharts.includes(type);
           return (
@@ -143,6 +140,7 @@ export function Sidebar() {
             </button>
           );
         })}
+      </div>
       </div>
     </div>
   );
