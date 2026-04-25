@@ -68,6 +68,7 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 13px;
+  border-left: 3px solid transparent;
 }
 
 .lapItem:hover {
@@ -76,10 +77,11 @@
 
 .lapItem.current {
   background: #0f3460;
+  border-left: 3px solid #4ecca3;
 }
 
 .lapItem.reference {
-  border: 1px solid #e94560;
+  border-left: 3px solid #e94560;
 }
 
 .lapItem.best {
@@ -150,4 +152,7 @@
 
 .chartsSection {
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
