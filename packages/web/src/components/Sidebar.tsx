@@ -85,44 +85,40 @@ export function Sidebar() {
         </>
       )}
 
-      <p className={styles.sectionTitle}>Laps</p>
-      {laps.length === 0 ? (
-        <p className={styles.empty}>
-          {rawLog
-            ? 'Set start/finish gate to split laps'
-            : 'Load a file to begin'}
-        </p>
-      ) : (
-        <ul className={styles.lapList}>
-          {laps.map((lap, i) => (
-            <li
-              key={i}
-              className={`${styles.lapItem} ${
-                i === currentLapIndex ? styles.current : ''
-              } ${
-                i === referenceLapIndex ? styles.reference : ''
-              } ${
-                i === session!.bestLapIndex ? styles.best : ''
-              }`}
-              onClick={() => selectCurrentLap(i)}
-            >
-              <span className={styles.lapLabel}>
-                L{i + 1}
-                {i === session!.bestLapIndex ? ' ★' : ''}
-              </span>
-              <span className={styles.lapTime}>{formatLapTime(lap.durationMs)}</span>
-              <button
-                className={styles.refBtn}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  selectReferenceLap(i === referenceLapIndex ? null : i);
-                }}
+      {laps.length > 0 && (
+        <>
+          <p className={styles.sectionTitle}>Laps</p>
+          <ul className={styles.lapList}>
+            {laps.map((lap, i) => (
+              <li
+                key={i}
+                className={`${styles.lapItem} ${
+                  i === currentLapIndex ? styles.current : ''
+                } ${
+                  i === referenceLapIndex ? styles.reference : ''
+                } ${
+                  i === session!.bestLapIndex ? styles.best : ''
+                }`}
+                onClick={() => selectCurrentLap(i)}
               >
-                {i === referenceLapIndex ? 'Unref' : 'Ref'}
-              </button>
-            </li>
-          ))}
-        </ul>
+                <span className={styles.lapLabel}>
+                  L{i + 1}
+                  {i === session!.bestLapIndex ? ' ★' : ''}
+                </span>
+                <span className={styles.lapTime}>{formatLapTime(lap.durationMs)}</span>
+                <button
+                  className={styles.refBtn}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    selectReferenceLap(i === referenceLapIndex ? null : i);
+                  }}
+                >
+                  {i === referenceLapIndex ? 'Unref' : 'Ref'}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
 
       <div className={styles.chartsSection}>
